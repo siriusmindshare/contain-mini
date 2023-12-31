@@ -1,0 +1,260 @@
+swagger: "2.0"
+
+info:
+  title: "Data Science Service"
+  description: "Swagger documentation"
+  version: "1.0"
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /api
+
+paths:
+  /health:
+    get:
+      responses:
+        200:
+          description: Health Check
+
+  /internal/submit:
+    post:
+      operationId: ds_infra.api.rest.service.manager.submit
+      summary: Train/predict model
+      parameters:
+        - name: query
+          in: body
+          required: true
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/ds_submit'
+      responses:
+        200:
+          description: return status
+          schema:
+            type: object
+            items:
+              - $ref: '#/definitions/ds_response_submit'
+
+  /internal/poll:
+    post:
+      operationId: ds_infra.api.rest.service.manager.poll
+      summary: poll task status
+      parameters:
+        - name: query
+          in: body
+          required: true
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/ds_poll'
+      responses:
+        200:
+          description: return status
+          schema:
+            type: object
+            items:
+              - $ref: '#/definitions/ds_response_poll'
+
+  /internal/version:
+    get:
+      operationId: ds_infra.api.rest.service.manager.version
+      summary: return the framework version at runtime
+      responses:
+        200:
+          description: return version
+          schema:
+            type: object
+            items:
+              - $ref: '#/definitions/ds_response_version'
+
+ 
+  
+  /v1/product1/rfm/predict:
+    post:
+      operationId: ds_infra.api.rest.service.manager.rfm_predict_score
+      summary: Prediction of RFM
+      parameters:
+        - name: query
+          in: body
+          required: true
+          schema:
+            type: object
+#            items:
+      responses:
+        200:
+          description: Return predicted probability
+          schema:
+            type: object
+#            items:
+
+
+  /v1/product1/rfm/get-data:
+    get:
+      operationId: ds_infra.Product1.projects.rfm.project.get_rfm_output_data
+      summary: Get Output data of RFM App
+      responses:
+        200:
+          description: Return predicted probability
+          schema:
+            type: object
+            items: 
+              - $ref: '#/definitions/rfm_response'
+
+
+ 
+
+
+
+definitions:
+    ds_response_submit:
+      type: object
+      properties:
+        input:
+          type: string
+          description: status
+          example: "OK"
+        siteid:
+          type: string
+          description: pythonID
+    
+    rfm_response:
+      type: object
+      required:
+        - status
+        - data
+        - statusMessage
+        - externalKey
+      properties:
+        status:
+          type: string
+          description: Status "OK" etc.
+        statusMessage:
+          type: string
+          description: success or failuer detection
+        version:
+          type: string
+          description: version
+        data:
+          type: string
+          description: Incoming JSON text
+          example: "{}"
+        externatKey:
+          type: string
+          description: external key
+        
+
+    ds_response_poll:
+      type: object
+      properties:
+        class:
+          type: string
+          description: result
+          example: "OK"
+
+    ds_response_version:
+      type: object
+      properties:
+        class:
+          type: string
+          description: result
+          example: "1.2.3"
+
+    ds_submit:
+      type: object
+      required:
+        - accountId
+        - workflowTaskId
+        - workflowName
+        - workflowExecId
+      properties:
+        accountId:
+          type: string
+          description: Site Id
+        workflowExecId:
+          type: string
+          description: Workflow Id
+        workflowTaskId:
+          type: string
+          description: workflow Task Id
+        workflowName:
+          type: string
+          description: Model Name, supported [text]
+          example: "text"
+        modelName:
+          type: string
+          description: Model Version, supported [text]
+          example: "text"
+        actionType:
+          type: string
+          description: train/test, supported [text]
+          example: "text"
+        modelInputPayload:
+          type: string
+          description: Input
+          example: "text"
+        modelStoredTableName:
+          type: string
+          description: Output
+          example: "text"
+        modelPredictedTableName:
+          type: string
+          description: Predictions
+          example: "text"
+        serverName:
+          type: string
+          description: server
+          example: "text"
+        status:
+          type: string
+          description: status
+          example: "text"
+        dbUrl:
+          type: string
+          description: dbUrl
+          example: "text"
+        dbUser:
+          type: string
+          description: dbUser
+          example: "text"
+        sysAdminDbUrl:
+          type: string
+          description: sysAdminDbUrl
+          example: "text"
+        sysAdminDbUser:
+          type: string
+          description: sysAdminDbUser
+          example: "text"
+        sysAdminEncryptedPwd:
+          type: string
+          description: sysAdminEncryptedPwd
+          example: "text"
+        custEncryptedPwd:
+          type: string
+          description: custEncryptedPwd
+          example: "text"
+    ds_poll:
+      type: object
+      required:
+        - accountId
+        - workflowExecId
+        - modelName
+        - workflowTaskId
+      properties:
+        accountId:
+          type: string
+          description: Site Id
+        workflowExecId:
+          type: string
+          description: Workflow Id
+        workflowTaskId:
+          type: string
+          description: Task Id
+        workflowName:
+          type: string
+          description: Model Name, supported [text]
+          example: "text"
+   

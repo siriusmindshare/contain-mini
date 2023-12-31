@@ -1,0 +1,7 @@
+## for artifactory-slc.oraclecorp.com yum repo
+[Artifactory]
+name=Artifactory
+baseurl=http://public-yum.oracle.com/repo/OracleLinux/OL7/latest/x86_64
+enabled=1
+repo_gpgcheck=0
+gpgcheck=0
