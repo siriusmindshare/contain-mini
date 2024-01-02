@@ -31,10 +31,12 @@ There are /dev directories under the folder you just downloaded.
 
 The /dev contains all the code for the backend service
 
-* Keys
+* Keys:
 create ssh keys and store them in dev/ds_infra/pem with following names
-server.cer.pem
-server.cer.key
+
+dev/ds_infra/pem/server.cer.pem
+
+dev/ds_infra/pem/server.cer.key
 
 
 ## Installation
