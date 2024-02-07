@@ -1,0 +1,19 @@
+---
+version: "3.0"
+
+services:
+  oracle_db:
+    image: wvbirder/database-enterprise:12.2.0.1-slim
+    environment:
+      - DB_SID=ORCL
+      - DB_PDB=ORCLPDB1
+      - DB_DOMAIN=localdomain
+      - DB_MEMORY=2GB
+    volumes:
+      - ${HOST_HOME_SCRIPTS}:${CONTAINER_HOME_SCRIPTS}
+    ports:
+      - 1521:1521
+networks:
+  default:
+    # Use a custom driver
+    driver: bridge

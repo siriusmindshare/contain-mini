@@ -1,0 +1,62 @@
+stages:
+    - build
+    - test
+
+devbuild:
+    stage: build
+    image: python:latest
+    script:
+        - python3 -m pip install --user --upgrade setuptools wheel
+        - pip install twine
+        - python3 setup.py sdist bdist_wheel
+        - twine upload --repository-url ${TWINE_DEV_URL} dist/*
+    only:
+        - develop
+
+stagebuild:
+    stage: build
+    image: python:latest
+    script:
+        - python3 -m pip install --user --upgrade setuptools wheel
+        - pip install twine
+        - python3 setup.py sdist bdist_wheel
+        - twine upload --repository-url ${TWINE_STAGE_URL} dist/*
+    only:
+        - /^release\/.*$/i
+
+
+releasebuild:
+    stage: build
+    image: python:latest
+    script:
+        - python3 -m pip install --user --upgrade setuptools wheel
+        - pip install twine
+        - python3 setup.py sdist bdist_wheel
+        - twine upload --repository-url ${TWINE_RELEASE_URL} dist/*
+    only:
+        - /^release\/.*$/i
+
+dockerbuild:
+    stage: build
+    image: docker:19.03.1
+    services: 
+        - docker:19.03.1-dind
+    script:
+        - apk update
+        - apk add --no-cache python3 python3-dev py-pip libffi-dev openssl-dev gcc libc-dev make
+        - apk upgrade
+        - pip3 install docker-compose
+        - docker-compose --version
+        - docker-compose -p ds_infra build 
+        - docker images
+        - docker login -u $TWINE_USERNAME -p $TWINE_PASSWORD $DOCKER_REPOSITORY
+        - docker tag ds_infra_ds_app:latest $DOCKER_REPOSITORY/ds_infra_ds_app:latest
+        - docker images
+        - docker push $DOCKER_REPOSITORY/ds_infra_ds_app:latest
+    only:
+        - /^release\/.*$/i
+
+test:
+    stage: test
+    script:
+        - echo "TO DO Run unit tests"

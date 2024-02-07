@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+
+##Import the CSV File into the DataFrame
+import pandas as pd
+df = pd.read_csv('staging_rfm_order_data (1).csv')
+df.head()
+
+##Finding the null
+print(df[df.isnull().T.any()]) 
+
+##Replacement of null values
+df = df.astype(object).where(pd.notnull(df), None) # Replacement of null values
+
+##install package
+pip install mysql-connector-python 
+
+##Connect to the MySQL using Python and create a Database
+import mysql.connector as msql
+from mysql.connector import Error
+try:
+    conn = msql.connect(host='127.0.0.1', user='root',  
+                        password='xd190301')#give ur username, password
+    if conn.is_connected():
+        cursor = conn.cursor()
+        cursor.execute("CREATE DATABASE rfm_order_data") #Create the database, rfm_order_data
+        print("Database is created")
+except Error as e:
+    print("Error while connecting to MySQL", e)
+
+
+## Create a table and Import the CSV data into the MySQL table
+import mysql.connector as msql
+from mysql.connector import Error
+try:
+    conn = msql.connect(host='127.0.0.1', database='rfm_order_data', user='root', password='xd190301')
+    if conn.is_connected():
+        cursor = conn.cursor()
+        cursor.execute("select database();")
+        record = cursor.fetchone()
+        print("You're connected to database: ", record)
+        cursor.execute('DROP TABLE IF EXISTS rfm_order_data;')
+        print('Creating table....')
+# in the below line please pass the create table statement which you want to create
+        cursor.execute("CREATE TABLE rfm_order_data(account_id varchar(255),order_id varchar(255),customer_id varchar(255),order_status varchar(255),order_purchase_time_stamp varchar(255),order_approved_at varchar(255),order_delivered_carrier_date varchar(255),order_delivered_customer_date varchar(255),order_estimated_delivery_date varchar(255))")
+        print("Table is created....")
+        #loop through the data frame
+        for i,row in df.iterrows():
+            #here %S means string values 
+            sql = "INSERT INTO rfm_order_data.rfm_order_data VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            cursor.execute(sql, tuple(row))
+            print("Record inserted")
+            # the connection is not auto committed by default, so we must commit to save our changes
+            conn.commit()
+except Error as e:
+            print("Error while connecting to MySQL", e)
+
+## Query the Table
+# Execute query
+sql = "SELECT * FROM  rfm_order_data.rfm_order_data "
+cursor.execute(sql)
+# Fetch all the records
+result = cursor.fetchall()
+for i in result:
+    print(i)

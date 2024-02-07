@@ -1,0 +1,41 @@
+---
+version: "3.0"
+
+services:
+  oracle_db:
+    # image: omcds-docker.dockerhub-den.siriuscorp.com/database/enterprise:12.2.0.1-slim #Original- Commented out- madhav - 10/03/2022
+    image: wvbirder/database-enterprise:12.2.0.1-slim
+    environment:
+      - DB_SID=ORCL
+      - DB_PDB=ORCLPDB1
+      - DB_DOMAIN=localdomain
+      - DB_MEMORY=2GB
+    volumes:
+      - ${HOST_HOME_SCRIPTS}:${CONTAINER_HOME_SCRIPTS}
+      - ${DATA_PIPELINE_DATA}:${CONTAINER_DATA_PIPELINE}
+      - ${ENVIORMENT_FILE}:${ENVIORMENT_FILE_CONTAINER}
+    ports:
+      - 1521:1521
+  ds_app:
+    build:
+      context: .
+      args:
+        REST_PORT : ${REST_PORT}
+        # no_proxy:  artifacthub-tip.siriuscorp.com,artifactory-slc.siriuscorp.com #Original - commented out - Madhav - 10/03/2022
+        DATASCIENCE_HOME: ${DATASCIENCE_HOME}
+    environment:
+      - MODE=dev
+      - DATASCIENCE_HOME=${DATASCIENCE_HOME}
+      - $PWD:/src
+    volumes:
+      - ${HOST_HOME_MODEL}:${DATASCIENCE_HOME}/models
+      - ${HOST_HOME_DATAFILES}:${DATASCIENCE_HOME}/datafiles
+      - ${HOST_HOME_LOGFILES}:${CONTAINER_HOME_LOGFILES}
+      - ${HOST_HOME_CERT}:${CONTAINER_HOME_CERT}
+      - .:/src
+    ports:
+      - "${REST_PORT}:${REST_PORT}"
+networks:
+  default:
+    # Use a custom driver
+    driver: bridge

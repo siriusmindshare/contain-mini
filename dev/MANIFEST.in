@@ -1,0 +1,7 @@
+include app.py
+include requirements.txt
+include ds_infra/*.ini
+include ds_infra/*.env
+include ds_infra/api/rest/logging/logging.config
+include ds_infra/swagger/*
+include ds_infra/scripts/*
